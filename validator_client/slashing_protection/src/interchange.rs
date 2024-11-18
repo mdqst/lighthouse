@@ -113,14 +113,17 @@ impl Interchange {
             match (max_source_epoch, max_target_epoch) {
                 (Some(source_epoch), Some(target_epoch)) => {
                     if let Some(prev_max) = max_attestation {
-                        prev_max.source_epoch = max(prev_max.source_epoch, source_epoch);
-                        prev_max.target_epoch = max(prev_max.target_epoch, target_epoch);
+                        *prev_max = SignedAttestation {
+                        source_epoch: max(prev_max.source_epoch, source_epoch),
+                        target_epoch: max(prev_max.target_epoch, target_epoch),
+                        signing_root: prev_max.signing_root,
+                    };
                     } else {
                         *max_attestation = Some(SignedAttestation {
-                            source_epoch,
-                            target_epoch,
-                            signing_root: None,
-                        });
+                        source_epoch,
+                        target_epoch,
+                        signing_root: None,
+                    });
                     }
                 }
                 (None, None) => {}
