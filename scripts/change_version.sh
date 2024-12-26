@@ -12,13 +12,18 @@
 #
 # `./change_version.sh 0.2.6 0.2.7`
 
+if [ $# -ne 2 ]; then
+  echo "Usage: $0 <current_version> <new_version>"
+  exit 1
+fi
+
 FROM=$1
 TO=$2
 VERSION_CRATE="../common/lighthouse_version/src/lib.rs"
 
 update_cargo_toml () {
-	echo $1
-	sed -i -e "s/version = \"$FROM\"/version = \"$TO\"/g" $1
+  echo "$1"
+  sed -i -e "s/version = \"$(echo $FROM | sed 's/[&/\]/\\&/g')\"/version = \"$(echo $TO | sed 's/[&/\]/\\&/g')\"/g" $1
 }
 
 echo "Changing version from $FROM to $TO"
@@ -30,5 +35,5 @@ update_cargo_toml ../lcli/Cargo.toml
 update_cargo_toml ../lighthouse/Cargo.toml
 update_cargo_toml ../validator_client/Cargo.toml
 
-echo $VERSION_CRATE
+echo "$VERSION_CRATE"
 sed -i -e "s/$FROM/$TO/g" $VERSION_CRATE
